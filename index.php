@@ -82,7 +82,7 @@
         </div>
         <div class="form-group">
             <?php if($update == true): ?>
-            <button type="submit" class="btn btn-primary" name="guardar">Atualizar</button>
+            <button type="submit" class="btn btn-primary" name="update">Atualizar</button>
             <?php else:?>
             <button type="submit" class="btn btn-primary" name="guardar">Guardar</button>
             <?php endif;?>

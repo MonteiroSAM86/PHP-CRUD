@@ -22,30 +22,61 @@ if (isset($_POST['guardar'])) {
     header("location: index.php");
 }
 
+
+
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    
-    $mysqli->query("DELETE FROM data WHERE id=$id") or die($mysqli->error());
 
-    $_SESSION['message']="Os dados foram apagados!"; // ERRO não aparece a mensagem de erro quando apago os dados da base de dados 
-    $_SESSION['msg_type']="danger";
-    header("location: index.php");
+    // Perform the deletion
+    $result = $mysqli->query("SELECT nome FROM data WHERE id=$id") or die($mysqli->error);
+    $row = $result->fetch_assoc();  // Fetch the result
+    $nome = $row['nome'];  // Get the 'nome' value from the result
+
+    // JavaScript confirmation
+    echo "<script>
+            var confirmDelete = confirm('Deseja apagar o registo \"$nome\"?');
+            if (confirmDelete) {
+                window.location.href='index.php?confirmedDelete=$id';
+            } else {
+                window.location.href='index.php';
+            }
+          </script>";
 }
+
+
+if (isset($_GET['confirmedDelete'])) {
+    $id = $_GET['confirmedDelete'];
+    
+    // Perform the deletion
+    $mysqli->query("DELETE FROM data WHERE id=$id") or die($mysqli->error);
+    
+    // Set success message
+    $_SESSION['message'] = "Os dados foram eliminados com sucesso!";
+    $_SESSION['msg_type'] = "danger";
+
+
+}
+
+
+
 
 if (isset($_GET['edit'])) {
     $id = $_GET['edit'];
     $update = true;
     $result = $mysqli->query("SELECT * FROM data WHERE id=$id") or die($mysqli->error());
-    if (count($result) == 1){
+
+    // Check the number of rows returned
+    if ($result->num_rows == 1) {
         $row = $result->fetch_array();
         $name = $row['nome'];
         $location = $row['local'];
-        
+    } else {
+        echo "No records found with ID: $id";
     }
-
 }
 
-if (isset($_POST['update'])) { // NÃO ESTÀ A FUNCIOMAR 
+
+if (isset($_POST['update'])) { 
     $id = $_POST['id'];
     $name = $_POST['nome'];
     $location = $_POST['local'];
